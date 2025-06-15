@@ -2,7 +2,7 @@
 
 namespace bubble_sort
 {
-    class Program  //test
+    class Program
     {
         static readonly Random rand = new Random();
 

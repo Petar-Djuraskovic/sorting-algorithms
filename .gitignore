@@ -482,3 +482,4 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+obj/Debug/net8.0/bubble sort.AssemblyInfoInputs.cache
