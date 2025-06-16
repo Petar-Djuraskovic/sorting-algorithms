@@ -13,17 +13,28 @@ namespace sortingAlgorithms
 
         static readonly List<int> numbersOfPasses = [];
 
-        static int[] ShuffleArray(int[] inputArr, List<int> inputList)
+        class sortResult
+        {
+            public int sortNumber = 0;
+
+            public int[] shuffledArray = [];
+            //public int[] sortedArray = [];
+
+            public int numberOfPasses;
+        }
+
+        static List<sortResult> sortResultsList = [];
+
+        static int[] ShuffleArray(int[] inputArr)
         {
 
             int[] arr = (int[])inputArr.Clone();
-            List<int> list = inputList;
+            List<int> list = [];
 
             // Make a list with ordered numbers
             for (int i = 0; i < arrayLength; i++)
             {
                 list.Add(i);
-                //Console.WriteLine($"shuffleList: {string.Join(", ", list)}");
             }
 
             // Randomly pick a number from the list and assign it to the current array slot
@@ -38,7 +49,7 @@ namespace sortingAlgorithms
             return arr;
         }
 
-        static int[] BubbleSort(int[] input, List<int> numbersOfPasses)
+        static (int[], int) BubbleSort(int[] input)
         {
             int[] arr = (int[])input.Clone();
             bool changesWereMade = true;
@@ -65,75 +76,14 @@ namespace sortingAlgorithms
                 numberOfPasses++;
             }
 
-            numbersOfPasses.Add(numberOfPasses);
-
-            return arr;
+            return (arr, numberOfPasses);
         }
 
-        static void Main(string[] args)
+        private static (int min, int index) FindLowestNumberOfPasses(List<sortResult> sortResults)
         {
-            bool isSortingFixedLengthArrays = true; ///////////////////////////////////////////////////////////////////////
-            List<int> arrayLengths = new();
 
-            arrayLength = 15;
+            List<int> theList = sortResults.Select(sr => sr.numberOfPasses).ToList();
 
-            for (int i = 0; i < 100000; i++)
-            {
-
-                if (!isSortingFixedLengthArrays) { arrayLength = rand.Next(10, 20); }
-
-                if (!isSortingFixedLengthArrays)
-                {
-                    arrayLengths.Add(arrayLength);
-                }
-
-                int[] array = new int[arrayLength];
-                List<int> shuffleList = new List<int>(arrayLength);
-
-                array = ShuffleArray(array, shuffleList);
-                Console.WriteLine($"Shuffled array: {string.Join(", ", array)}");
-
-                array = BubbleSort(array, numbersOfPasses);
-                Console.WriteLine($"Sorted array: {string.Join(", ", array)}");
-
-                Console.WriteLine($"Sorted no. {i + 1}, {numbersOfPasses[i]} passes.\n");
-            }
-
-            Console.WriteLine("Finished all sorts.\n");
-
-            if (isSortingFixedLengthArrays)
-            {
-                Console.WriteLine($"numbers per array: {arrayLength}");
-            }
-            else
-            {
-                Console.WriteLine($"average amount of numbers per array: {(float)arrayLengths.Average()}");
-            }
-
-            Console.Write($"list of numbers of passes: ");
-
-            if (!isSortingFixedLengthArrays)
-            {
-                for (int i = 0; i < numbersOfPasses.Count; i++)
-                {
-                    Console.Write($"({numbersOfPasses[i]} / {arrayLengths[i]})  ");
-                }
-            }
-            else
-            {
-                Console.WriteLine($"{string.Join(", ", numbersOfPasses)}");
-            }
-
-            Console.WriteLine($"average number of passes: {(float)numbersOfPasses.Average()}");
-
-            (int min, int index) = FindListMinimum(numbersOfPasses);
-            Console.WriteLine($"lowest number of passes: {min}, at sort no. {index}");
-
-            Console.ReadKey();
-        }
-
-        private static (int min, int index) FindListMinimum(List<int> theList)
-        {
             if (theList.Count == 0)
             {
                 throw new Exception("FindMin: List can't be empty");
@@ -151,5 +101,61 @@ namespace sortingAlgorithms
 
             return result;
         }
+
+        static void WriteSortResultsToFile(List<sortResult> sortResults)
+        {
+            using (StreamWriter writer = new StreamWriter("output.txt", append: false))
+            {
+                foreach (var item in sortResults)
+                {
+                    writer.WriteLine($"Sort number {item.sortNumber}:");
+                    writer.WriteLine($"shuffled list: {string.Join(", ", item.shuffledArray)}");
+                    writer.WriteLine($"number of passes: {item.numberOfPasses} \n");
+
+                }
+            }
+        }
+
+        static void Main(string[] args)
+        {
+            arrayLength = 15;
+
+            for (int i = 0; i < 5000000; i++)
+            {
+
+                //arrayLength = rand.Next(10, 20);
+
+                sortResult sortResult = new();
+
+                sortResult.sortNumber = i;
+
+                int[] array = new int[arrayLength];
+
+                array = ShuffleArray(array);
+                sortResult.shuffledArray = (int[])array.Clone();
+
+                (int[], int) result = BubbleSort(array);
+                sortResult.numberOfPasses = result.Item2;
+
+                sortResultsList.Add(sortResult);
+
+            }
+
+            Console.WriteLine($"Finished {sortResultsList.Count} sorts.\n");
+
+            Console.WriteLine($"numbers per array: {arrayLength}");
+
+            List<int> numbersOfPasses = sortResultsList.Select(sr => sr.numberOfPasses).ToList();
+
+            Console.WriteLine($"average number of passes: {(float)numbersOfPasses.Average()}");
+
+            (int, int) listMinResult = FindLowestNumberOfPasses(sortResultsList);
+            Console.WriteLine($"lowest number of passes: {listMinResult.Item1}, at sort no. {listMinResult.Item2}");
+
+            WriteSortResultsToFile(sortResultsList);
+
+            Console.ReadKey();
+        }
+
     }
 }
