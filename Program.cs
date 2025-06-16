@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace bubble_sort
+namespace sortingAlgorithms
 {
     class Program
     {

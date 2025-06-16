@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Djura\\Desktop\\New folder\\pravi folder za programe\\bubble sort\\bubble sort.csproj",
-      "projectName": "bubble sort",
-      "projectPath": "C:\\Users\\Djura\\Desktop\\New folder\\pravi folder za programe\\bubble sort\\bubble sort.csproj",
+      "projectUniqueName": "C:\\Users\\Djura\\Desktop\\New folder\\pravi folder za programe\\sorting-algorithms\\sorting-algorithms.csproj",
+      "projectName": "sorting-algorithms",
+      "projectPath": "C:\\Users\\Djura\\Desktop\\New folder\\pravi folder za programe\\sorting-algorithms\\sorting-algorithms.csproj",
       "packagesPath": "C:\\Users\\Djura\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Djura\\Desktop\\New folder\\pravi folder za programe\\bubble sort\\obj\\",
+      "outputPath": "C:\\Users\\Djura\\Desktop\\New folder\\pravi folder za programe\\sorting-algorithms\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Djura\\AppData\\Roaming\\NuGet\\NuGet.Config"
