@@ -4,21 +4,21 @@ namespace sortingAlgorithms
 {
     class Program
     {
+
+        static bool loggingResults = true;
+
         static readonly Random rand = new Random();
 
         static int arrayLength = 15;
 
-        //static int shuffleRangeMin = 0;
         static readonly int shuffleRangeMax = arrayLength - 1;
-
-        static readonly List<int> numbersOfPasses = [];
 
         class sortResult
         {
             public int sortNumber = 0;
 
             public int[] shuffledArray = [];
-            //public int[] sortedArray = [];
+            public int[] sortedArray = [];
 
             public int numberOfPasses;
         }
@@ -34,7 +34,7 @@ namespace sortingAlgorithms
             // Make a list with ordered numbers
             for (int i = 0; i < arrayLength; i++)
             {
-                list.Add(i);
+                list.Add(i + 1);
             }
 
             // Randomly pick a number from the list and assign it to the current array slot
@@ -55,6 +55,8 @@ namespace sortingAlgorithms
             bool changesWereMade = true;
             int numberOfPasses = 0;
 
+            Console.Write("\x1b[?25l"); //hide cursor
+
             while (changesWereMade)
             {
 
@@ -63,6 +65,10 @@ namespace sortingAlgorithms
                 // Do one pass
                 for (int j = 0; j < arrayLength - 1; j++)
                 {
+
+                    VisualizeArray(arr, j, arr.Max());
+                    //Thread.Sleep(100);
+
                     if (arr[j] > arr[j + 1])
                     {
                         int temp = arr[j];
@@ -76,7 +82,32 @@ namespace sortingAlgorithms
                 numberOfPasses++;
             }
 
+            Console.Write("\x1b[?25h"); // Show cursor
             return (arr, numberOfPasses);
+        }
+
+        static void VisualizeArray(int[] arr, int currentLine, int graphHeight)
+        {
+            Console.Write("\x1b[H"); // Move cursor to home position
+
+            for (int row = graphHeight; row > 0; row--)
+            {
+                for (int col = 0; col < arr.Length; col++)
+                {
+                    if (arr[col] >= row)
+                    {
+                        if (col == currentLine || col == currentLine + 1)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.Write("█");
+                            Console.ResetColor();
+                        }
+                        else { Console.Write("█"); }
+                    }
+                    else { Console.Write(" "); }
+                }
+                Console.Write("\n");
+            }
         }
 
         private static (int min, int index) FindLowestNumberOfPasses(List<sortResult> sortResults)
@@ -110,6 +141,7 @@ namespace sortingAlgorithms
                 {
                     writer.WriteLine($"Sort number {item.sortNumber}:");
                     writer.WriteLine($"shuffled list: {string.Join(", ", item.shuffledArray)}");
+                    writer.WriteLine($"sorted list: {string.Join(", ", item.sortedArray)}");
                     writer.WriteLine($"number of passes: {item.numberOfPasses} \n");
 
                 }
@@ -118,27 +150,28 @@ namespace sortingAlgorithms
 
         static void Main(string[] args)
         {
-            arrayLength = 15;
+            arrayLength = 10;
 
-            for (int i = 0; i < 5000000; i++)
+            for (int i = 0; i < 1000; i++)
             {
 
                 //arrayLength = rand.Next(10, 20);
 
                 sortResult sortResult = new();
 
-                sortResult.sortNumber = i;
+                if (loggingResults) { sortResult.sortNumber = i; }
 
                 int[] array = new int[arrayLength];
 
                 array = ShuffleArray(array);
-                sortResult.shuffledArray = (int[])array.Clone();
+                if (loggingResults) { sortResult.shuffledArray = (int[])array.Clone(); }
 
                 (int[], int) result = BubbleSort(array);
+                if(loggingResults) { sortResult.sortedArray = (int[])result.Item1.Clone(); }
+
                 sortResult.numberOfPasses = result.Item2;
 
                 sortResultsList.Add(sortResult);
-
             }
 
             Console.WriteLine($"Finished {sortResultsList.Count} sorts.\n");
@@ -152,8 +185,7 @@ namespace sortingAlgorithms
             (int, int) listMinResult = FindLowestNumberOfPasses(sortResultsList);
             Console.WriteLine($"lowest number of passes: {listMinResult.Item1}, at sort no. {listMinResult.Item2}");
 
-            WriteSortResultsToFile(sortResultsList);
-
+            if(loggingResults) { WriteSortResultsToFile(sortResultsList); }
             Console.ReadKey();
         }
 
