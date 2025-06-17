@@ -63,11 +63,11 @@ namespace sortingAlgorithms
                 changesWereMade = false;
 
                 // Do one pass
-                for (int j = 0; j < arrayLength - 1; j++)
+                for (int j = 0; j < arrayLength - numberOfPasses - 1; j++)
                 {
 
                     VisualizeArray(arr, j, arr.Max());
-                    //Thread.Sleep(100);
+                    Thread.Sleep(100);
 
                     if (arr[j] > arr[j + 1])
                     {
@@ -90,24 +90,25 @@ namespace sortingAlgorithms
         {
             Console.Write("\x1b[H"); // Move cursor to home position
 
+            var sb = new System.Text.StringBuilder();
+
             for (int row = graphHeight; row > 0; row--)
             {
                 for (int col = 0; col < arr.Length; col++)
                 {
                     if (arr[col] >= row)
                     {
-                        if (col == currentLine || col == currentLine + 1)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.Write("█");
-                            Console.ResetColor();
-                        }
-                        else { Console.Write("█"); }
+                        sb.Append(col == currentLine ? "\x1b[31m█\x1b[0m" : "█"); // Draw a red square if the pixel is being sorted
                     }
-                    else { Console.Write(" "); }
+                    else
+                    {
+                        sb.Append(" ");
+                    }
                 }
-                Console.Write("\n");
+                sb.Append('\n');
             }
+
+            Console.Write(sb.ToString());
         }
 
         private static (int min, int index) FindLowestNumberOfPasses(List<sortResult> sortResults)
@@ -152,10 +153,10 @@ namespace sortingAlgorithms
         {
             arrayLength = 10;
 
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 5; i++)
             {
 
-                //arrayLength = rand.Next(10, 20);
+                //arrayLength = rand.Next(40, 80);
 
                 sortResult sortResult = new();
 
@@ -164,6 +165,7 @@ namespace sortingAlgorithms
                 int[] array = new int[arrayLength];
 
                 array = ShuffleArray(array);
+
                 if (loggingResults) { sortResult.shuffledArray = (int[])array.Clone(); }
 
                 (int[], int) result = BubbleSort(array);
